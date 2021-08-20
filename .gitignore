@@ -1,0 +1,12 @@
+# Ignore a blackhole
+node_modules/
+
+# Ignore the dist output
+dist/
+
+# Environment variables
+.env
+
+# Ignore temp info
+temp/
+yarn-error.log

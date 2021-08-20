@@ -1,0 +1,19 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../dist",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "#root/*": ["*"],
+      "#config/*": ["config/*"],
+      "#lib/*": ["lib/types/*"],
+      "#types/*": ["lib/types/*"],
+      "#structures/*": ["lib/structures/*"],
+      "#factories/*": ["lib/factories/*"],
+      "#entities/*": ["lib/database/entities/*"],
+      "#repositories/*": ["lib/database/repositories/*"]
+    }
+  },
+  "include": [".", "../BaseEntity.ts"]
+}
