@@ -1,9 +1,9 @@
 {
-  "name": "~name~",
+  "name": "mustang",
   "version": "1.0.0",
-  "description": "~description~",
+  "description": "Multi-purpose bot for my school Discord server",
   "main": "dist/index.js",
-  "repository": "https://github.com/Lioness100/~name~",
+  "repository": "https://github.com/Lioness100/Mustang",
   "author": "Lioness100 <jchickmm2@gmail.com>",
   "license": "MIT",
   "type": "module",

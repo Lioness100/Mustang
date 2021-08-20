@@ -4,7 +4,7 @@ import type { EntityManager } from '@mikro-orm/core';
 import type { ArgType } from '@sapphire/framework';
 import type { embed, error } from '#factories/embeds';
 import type BaseRepository from '#repositories/BaseRepository';
-import type Guild from '#entities/Guild';
+import type Guild from '#root/lib/database/entities/User';
 
 declare global {
   namespace NodeJS {
@@ -14,15 +14,12 @@ declare global {
       COLOR: ColorResolvable;
       PRESENCE_NAME: string;
       PRESENCE_TYPE: ActivityType;
+      VERIFICATION_CHANNEL: Snowflake;
     }
   }
 }
 
 declare module '@sapphire/framework' {
-  class SapphireClient {
-    public prefixCache: Map<Snowflake, string>;
-  }
-
   class Command {
     public category: string;
     public usage?: string;

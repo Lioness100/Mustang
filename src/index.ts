@@ -3,7 +3,7 @@ import { container } from '@sapphire/framework';
 import { MikroORM } from '@mikro-orm/core';
 import { yellow, green, bold } from 'colorette';
 import Client from '#structures/Client';
-import Guild from '#entities/Guild';
+import Guild from '#root/lib/database/entities/User';
 import ormOptions from '#config/orm';
 
 const client = new Client();

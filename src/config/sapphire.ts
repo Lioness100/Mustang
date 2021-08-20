@@ -18,8 +18,16 @@ const options: SapphireClientOptions & ClientOptions = {
   logger: {
     instance: new Logger(loggerOptions),
   },
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES],
-  partials: [Constants.PartialTypes.CHANNEL],
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+  ],
+  partials: [
+    Constants.PartialTypes.CHANNEL,
+    Constants.PartialTypes.MESSAGE,
+    Constants.PartialTypes.REACTION,
+  ],
 };
 
 if (name && type) {

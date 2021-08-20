@@ -1,3 +1,4 @@
+import { SnowflakeRegex } from '@sapphire/discord.js-utilities';
 import { Util } from 'discord.js';
 import has from '#lib/env/validate';
 
@@ -13,3 +14,4 @@ has('COLOR', (val) => Util.resolveColor(val) || 'is not a valid color');
 has('PRESENCE_NAME', (val) => val && !type && 'must be coupled with "PRESENCE_TYPE"', false);
 has('PRESENCE_TYPE', (val) => val && !name && 'must be coupled with "PRESENCE_NAME"', false);
 has('PRESENCE_TYPE', (val) => types.includes(val) || `must be one of ${types.join(', ')}`, false);
+has('VERIFICATION_CHANNEL', (val) => SnowflakeRegex.test(val) || 'is not a valid channel ID');
