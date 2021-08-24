@@ -3,12 +3,20 @@ import { blue, gray, green, magenta, magentaBright, bold } from 'colorette';
 import { Listener, Events } from '@sapphire/framework';
 import { ApplyOptions } from '@sapphire/decorators';
 import { readFileSync } from 'fs';
+import { getColor } from 'colorthief';
 
 @ApplyOptions<ListenerOptions>({ once: true })
 export default class UserEvent extends Listener<typeof Events.ClientReady> {
-  public run() {
+  public async run() {
+    await this.findDominantColor();
     this.printBanner();
     this.printStoreDebugInformation();
+  }
+
+  private async findDominantColor() {
+    this.container.client.color = await getColor(
+      this.container.client.user!.displayAvatarURL({ format: 'png' })
+    );
   }
 
   private printBanner() {

@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-namespace */
-import type { ColorResolvable, ActivityType, Snowflake } from 'discord.js';
+import type { ColorResolvable, ActivityType, Snowflake, Guild, ColorResolvable } from 'discord.js';
 import type { EntityManager } from '@mikro-orm/core';
 import type { ArgType } from '@sapphire/framework';
 import type { embed, error } from '#factories/embeds';
 import type BaseRepository from '#repositories/BaseRepository';
-import type Guild from '#root/lib/database/entities/User';
+import type User from '#root/lib/database/entities/User';
 
 declare global {
   namespace NodeJS {
@@ -15,11 +14,19 @@ declare global {
       PRESENCE_NAME: string;
       PRESENCE_TYPE: ActivityType;
       VERIFICATION_CHANNEL: Snowflake;
+      MHS_ROLE: Snowflake;
+      NON_MHS_ROLE: Snowflake;
+      VERIFICATION_LOG_CHANNEL: Snowflake;
+      GENERAL_CHANNEL: Snowflake;
     }
   }
 }
 
 declare module '@sapphire/framework' {
+  class SapphireClient {
+    public color!: [number, number, number];
+    public get guild(): Guild;
+  }
   class Command {
     public category: string;
     public usage?: string;
@@ -46,6 +53,6 @@ declare module '@sapphire/pieces' {
     error: typeof error;
 
     em: EntityManager;
-    guilds: BaseRepository<Guild>;
+    users: BaseRepository<User>;
   }
 }

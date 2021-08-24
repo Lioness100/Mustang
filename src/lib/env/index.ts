@@ -15,3 +15,7 @@ has('PRESENCE_NAME', (val) => val && !type && 'must be coupled with "PRESENCE_TY
 has('PRESENCE_TYPE', (val) => val && !name && 'must be coupled with "PRESENCE_NAME"', false);
 has('PRESENCE_TYPE', (val) => types.includes(val) || `must be one of ${types.join(', ')}`, false);
 has('VERIFICATION_CHANNEL', (val) => SnowflakeRegex.test(val) || 'is not a valid channel ID');
+has('MHS_ROLE', (val) => SnowflakeRegex.test(val) || 'is not a valid role ID');
+has('NON_MHS_ROLE', (val) => SnowflakeRegex.test(val) || 'is not a valid role ID');
+has('VERIFICATION_LOG_CHANNEL', (val) => SnowflakeRegex.test(val) || 'is not a valid channel ID');
+has('GENERAL_CHANNEL', (val) => SnowflakeRegex.test(val) || 'is not a valid channel ID');

@@ -1,5 +1,5 @@
-import { RequestContext } from '@mikro-orm/core';
 import type { ArgType, CommandOptions, PieceContext } from '@sapphire/framework';
+import { RequestContext } from '@mikro-orm/core';
 import { Command } from '@sapphire/framework';
 import { toTitleCase } from '@sapphire/utilities';
 import { sep } from 'path';

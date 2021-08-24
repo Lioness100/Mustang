@@ -3,7 +3,7 @@ import { container } from '@sapphire/framework';
 import { MikroORM } from '@mikro-orm/core';
 import { yellow, green, bold } from 'colorette';
 import Client from '#structures/Client';
-import Guild from '#root/lib/database/entities/User';
+import User from '#entities/User';
 import ormOptions from '#config/orm';
 
 const client = new Client();
@@ -18,7 +18,7 @@ try {
   client.logger.info(bold(green('Connected')));
 
   container.em = em;
-  container.guilds = em.getRepository(Guild);
+  container.users = em.getRepository(User);
 } catch (error) {
   client.logger.fatal(error);
   client.destroy();
