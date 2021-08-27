@@ -1,9 +1,11 @@
-import type { ColorResolvable, ActivityType, Snowflake, Guild, ColorResolvable } from 'discord.js';
+import type { ColorResolvable, ActivityType, Snowflake, Guild } from 'discord.js';
 import type { EntityManager } from '@mikro-orm/core';
 import type { ArgType } from '@sapphire/framework';
 import type { embed, error } from '#factories/embeds';
 import type BaseRepository from '#repositories/BaseRepository';
-import type User from '#root/lib/database/entities/User';
+import type Classroom from '#structures/Classroom';
+import type Reminder from '#entities/Reminder';
+import type User from '#entities/User';
 
 declare global {
   namespace NodeJS {
@@ -18,15 +20,22 @@ declare global {
       NON_MHS_ROLE: Snowflake;
       VERIFICATION_LOG_CHANNEL: Snowflake;
       GENERAL_CHANNEL: Snowflake;
+      ROLE_CHANNEL: Snowflake;
+      CLIENT_ID: string;
+      CLIENT_SECRET: string;
+      AUTH_URI: string;
+      TOKEN_URI: string;
+      REDIRECT_URI: string;
+      CLASSROOM_CHANNEL: Snowflake;
     }
   }
 }
 
 declare module '@sapphire/framework' {
   class SapphireClient {
-    public color!: [number, number, number];
     public get guild(): Guild;
   }
+
   class Command {
     public category: string;
     public usage?: string;
@@ -54,5 +63,8 @@ declare module '@sapphire/pieces' {
 
     em: EntityManager;
     users: BaseRepository<User>;
+    reminders: BaseRepository<Reminder>;
+
+    classroom: Classroom;
   }
 }

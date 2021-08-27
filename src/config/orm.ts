@@ -1,11 +1,12 @@
 import type { Options } from '@mikro-orm/core';
 import BaseRepository from '#repositories/BaseRepository';
 import BaseEntity from '#entities/BaseEntity';
-import User from '#root/lib/database/entities/User';
+import Reminder from '#entities/Reminder';
+import User from '#entities/User';
 
 const options: Options = {
   entityRepository: BaseRepository,
-  entities: [BaseEntity, User],
+  entities: [BaseEntity, User, Reminder],
   type: 'mongo',
 };
 

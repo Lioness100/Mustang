@@ -29,7 +29,7 @@ export default class UserListener extends Listener<typeof Events.MessageCreate> 
     ) as TextChannel;
 
     const color = await getColor(message.author.displayAvatarURL({ format: 'png' })).catch(
-      () => this.container.client.color
+      () => process.env.COLOR
     );
 
     const nickname = toTitleCase(name);

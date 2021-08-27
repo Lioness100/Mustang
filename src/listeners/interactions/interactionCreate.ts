@@ -1,19 +1,142 @@
-import type { Constants, Interaction, TextChannel } from 'discord.js';
-import { MessageEmbed, Message, MessageButton, MessageActionRow } from 'discord.js';
+import type {
+  Constants,
+  Interaction,
+  TextChannel,
+  ButtonInteraction,
+  SelectMenuInteraction,
+} from 'discord.js';
+import type GuildMessage from '#types/GuildMessage';
+import type RoleEntry from '#types/RoleEntry';
+import { MessageEmbed, Message, MessageButton, MessageActionRow, GuildMember } from 'discord.js';
 import Listener from '#structures/Listener';
+import fs from 'fs/promises';
+
+const raw = await fs.readFile('./data/roles.json', 'utf8');
+const roles: RoleEntry[] = JSON.parse(raw);
 
 export default class UserListener extends Listener<typeof Constants.Events.INTERACTION_CREATE> {
-  public async run(interaction: Interaction) {
-    if (!interaction.isButton()) {
+  public run(interaction: Interaction) {
+    if (interaction.isButton()) {
+      return ['sub', 'unsub'].includes(interaction.customId)
+        ? this.handleSubscriptionUpdate(interaction)
+        : this.handleVerificationJudgement(interaction);
+    }
+
+    if (interaction.isSelectMenu()) {
+      const entry = roles.find(({ type }) => type === interaction.customId);
+      if (entry) {
+        return this.handleRoleSelection(interaction, entry);
+      }
+    }
+  }
+
+  private async handleRoleSelection(interaction: SelectMenuInteraction, entry: RoleEntry) {
+    const member =
+      interaction.member instanceof GuildMember
+        ? interaction.member
+        : await interaction.guild!.members.fetch(interaction.member!.user.id).catch(() => null);
+
+    if (!member) {
       return;
     }
 
+    if (!member.roles.cache.has(process.env.MHS_ROLE)) {
+      return interaction.reply({
+        content: "❌ You're not an MHS student!",
+        ephemeral: true,
+      });
+    }
+
+    const wantedRole = entry.roles.find(({ label }) => interaction.values[0] === label)!;
+    const previousRole = entry.roles.find(({ id }) =>
+      member.roles.cache.some((role) => role.id === id)
+    );
+
+    if (previousRole) {
+      if (previousRole.id === wantedRole.id) {
+        return interaction.reply({
+          content: '❌ You already have this class role!',
+          ephemeral: true,
+        });
+      }
+
+      if (previousRole.notifs && member.roles.cache.has(previousRole.notifs)) {
+        await member.roles.remove(previousRole.notifs);
+      }
+
+      await member.roles.remove(previousRole.id);
+    }
+
+    await member.roles.add(wantedRole.id);
+    return interaction.reply({
+      content: "✅ OK, you've been given that class role",
+      ephemeral: true,
+    });
+  }
+
+  private async handleSubscriptionUpdate(interaction: ButtonInteraction) {
+    const member =
+      interaction.member instanceof GuildMember
+        ? interaction.member
+        : await interaction.guild!.members.fetch(interaction.member!.user.id).catch(() => null);
+
+    if (!member) {
+      return;
+    }
+
+    const message = (await this.getMessage(interaction)) as GuildMessage;
+    if (!member.roles.cache.has(process.env.MHS_ROLE)) {
+      return interaction.reply({
+        content: "❌ You're not an MHS student!",
+        ephemeral: true,
+      });
+    }
+
+    const selectMenu = message.components[0].components[0];
+    const entry = roles.find(({ type }) => type === selectMenu.customId);
+    if (!entry) {
+      return;
+    }
+
+    const role = entry.roles.find(({ id }) => member.roles.cache.has(id));
+    if (interaction.customId === 'sub') {
+      if (!role) {
+        return interaction.reply({
+          content: "❌ You need to specify what class you're in to receive notifications!",
+          ephemeral: true,
+        });
+      }
+
+      await member.roles.add(role.notifs!);
+      return interaction.reply({
+        content: "✅ You've subscribed to this class' notifications!",
+        ephemeral: true,
+      });
+    }
+
+    if (interaction.customId === 'unsub') {
+      if (!role || !member.roles.cache.has(role.notifs!)) {
+        return interaction.reply({
+          content: "❌ You're not currently subscribed to this class' notifications!",
+          ephemeral: true,
+        });
+      }
+
+      await member.roles.remove(role.notifs!);
+      return interaction.reply({
+        content: "✅ You've unsubscribed to this class' notifications!",
+        ephemeral: true,
+      });
+    }
+  }
+
+  private async handleVerificationJudgement(interaction: ButtonInteraction) {
     const user = await this.container.users.findOne({ applicationMessage: interaction.message.id });
     if (!user) {
       return;
     }
 
-    const embed = (description: string, color = this.client.color) =>
+    const embed = (description: string, color = process.env.COLOR) =>
       new MessageEmbed()
         .setAuthor(interaction.user.tag, interaction.user.displayAvatarURL({ dynamic: true }))
         .setColor(color)
@@ -23,15 +146,8 @@ export default class UserListener extends Listener<typeof Constants.Events.INTER
       embeds: [embed(`OK, I'll ${interaction.customId} this user!`)],
     });
 
-    let channel;
-
-    if (interaction.message instanceof Message) {
-      await interaction.message.edit({ components: [] });
-    } else {
-      channel = this.client.guild.channels.cache.get(interaction.message.channel_id) as TextChannel;
-      const message = await channel.messages.fetch(interaction.message.id);
-      await message.edit({ components: [] });
-    }
+    const message = await this.getMessage(interaction);
+    await message.edit({ components: [] });
 
     const member = await interaction.guild!.members.fetch(user._id).catch(() => null);
     if (!member) {
@@ -46,25 +162,17 @@ export default class UserListener extends Listener<typeof Constants.Events.INTER
         new MessageButton().setCustomId('non_mhs').setLabel('No').setEmoji('👎').setStyle('DANGER')
       );
 
-      const sentInteraction = await interaction.followUp({
+      const sentInteraction = (await interaction.followUp({
         embeds: [
           embed(
             "Is this student from MHS? If you don't answer in 30 seconds, I'll assume the answer is yes."
           ),
         ],
         components: [row],
-      });
+        fetchReply: true,
+      })) as Message;
 
-      let sentMessage;
-
-      if (sentInteraction instanceof Message) {
-        sentMessage = sentInteraction;
-      } else {
-        channel ??= this.client.guild.channels.cache.get(sentInteraction.channel_id) as TextChannel;
-        sentMessage = await channel.messages.fetch(interaction.message.id);
-      }
-
-      const collected = await sentMessage
+      const collected = await sentInteraction
         .awaitMessageComponent({
           filter: (i) => i.user.id === interaction.user.id,
           componentType: 'BUTTON',
@@ -73,7 +181,7 @@ export default class UserListener extends Listener<typeof Constants.Events.INTER
         .catch(() => null);
 
       collected?.update({});
-      await sentMessage.delete();
+      await sentInteraction.delete();
       const isMhs = (collected?.customId ?? 'mhs') === 'mhs';
 
       await member.setNickname(user.nickname);
@@ -99,5 +207,17 @@ export default class UserListener extends Listener<typeof Constants.Events.INTER
 
       this.container.users.remove(user).flush();
     }
+  }
+
+  private getMessage(interaction: ButtonInteraction | SelectMenuInteraction) {
+    if (interaction.message instanceof Message) {
+      return interaction.message;
+    }
+
+    const channel =
+      interaction.channel ??
+      (this.client.guild.channels.cache.get(interaction.message.channel_id) as TextChannel);
+
+    return channel.messages.fetch(interaction.message.id);
   }
 }

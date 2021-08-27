@@ -10,3 +10,6 @@ dist/
 # Ignore temp info
 temp/
 yarn-error.log
+
+# Secure data
+data/
