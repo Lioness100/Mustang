@@ -192,7 +192,15 @@ export default class UserListener extends Listener<typeof Constants.Events.INTER
 
       await generalChannel.send({
         content: `${member} 🎉🎉`,
-        embeds: [embed('Welcome to the MHS 9th Grade server!')],
+        embeds: [
+          embed(
+            `Welcome to the MHS 9th Grade server!${
+              isMhs
+                ? ` Please give yourself some <#${process.env.ROLE_CHANNEL}> before chatting!`
+                : ''
+            }`
+          ),
+        ],
       });
 
       user.verified = true;
