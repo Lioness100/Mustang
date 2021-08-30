@@ -22,7 +22,6 @@ has('GENERAL_CHANNEL', (val) => SnowflakeRegex.test(val) || 'is not a valid chan
 has('ROLE_CHANNEL', (val) => SnowflakeRegex.test(val) || 'is not a valid channel ID');
 has('CLIENT_ID');
 has('CLIENT_SECRET');
-has('AUTH_URI');
-has('TOKEN_URI');
 has('REDIRECT_URI');
 has('CLASSROOM_CHANNEL', (val) => SnowflakeRegex.test(val) || 'is not a valid channel ID');
+has('CANCELATION_CHANNEL', (val) => SnowflakeRegex.test(val) || 'is not a valid channel ID');

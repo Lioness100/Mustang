@@ -180,7 +180,6 @@ export default class UserListener extends Listener<typeof Constants.Events.INTER
         })
         .catch(() => null);
 
-      collected?.update({});
       await sentInteraction.delete();
       const isMhs = (collected?.customId ?? 'mhs') === 'mhs';
 

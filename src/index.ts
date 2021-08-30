@@ -4,6 +4,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { yellow, green, bold } from 'colorette';
 import Client from '#structures/Client';
 import Classroom from '#structures/Classroom';
+import Cancelation from '#entities/Cancelation';
 import Reminder from '#entities/Reminder';
 import User from '#entities/User';
 import ormOptions from '#config/orm';
@@ -18,6 +19,7 @@ try {
   container.em = em;
   container.users = em.getRepository(User);
   container.reminders = em.getRepository(Reminder);
+  container.cancelations = em.getRepository(Cancelation);
 
   client.logger.info(yellow('Connecting to classroom'));
   const classroom = new Classroom();

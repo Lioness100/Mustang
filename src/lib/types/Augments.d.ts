@@ -4,6 +4,7 @@ import type { ArgType } from '@sapphire/framework';
 import type { embed, error } from '#factories/embeds';
 import type BaseRepository from '#repositories/BaseRepository';
 import type Classroom from '#structures/Classroom';
+import type Cancelation from '#entities/Cancelation';
 import type Reminder from '#entities/Reminder';
 import type User from '#entities/User';
 
@@ -27,6 +28,7 @@ declare global {
       TOKEN_URI: string;
       REDIRECT_URI: string;
       CLASSROOM_CHANNEL: Snowflake;
+      CANCELATION_CHANNEL: Snowflake;
     }
   }
 }
@@ -64,6 +66,7 @@ declare module '@sapphire/pieces' {
     em: EntityManager;
     users: BaseRepository<User>;
     reminders: BaseRepository<Reminder>;
+    cancelations: BaseRepository<Cancelation>;
 
     classroom: Classroom;
   }

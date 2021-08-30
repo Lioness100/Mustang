@@ -1,6 +1,6 @@
 import type { SapphireClientOptions } from '@sapphire/framework';
 import type { ClientOptions } from 'discord.js';
-import { Intents, Constants } from 'discord.js';
+import { Intents } from 'discord.js';
 import loggerOptions from '#config/logger';
 import Logger from '#structures/Logger';
 
@@ -19,7 +19,6 @@ const options: SapphireClientOptions & ClientOptions = {
     instance: new Logger(loggerOptions),
   },
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS],
-  partials: [Constants.PartialTypes.CHANNEL],
 };
 
 if (name && type) {
