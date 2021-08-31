@@ -103,7 +103,7 @@ class Classroom {
       return false;
     }
 
-    const mention = Classroom.resolveMention(course.enrollmentCode!);
+    const mention = Classroom.resolveMention(course.alternateLink!);
     if (dueDate - Date.now() > 8.64e7) {
       setTimeout(() => {
         const embed = new MessageEmbed()
@@ -146,7 +146,7 @@ class Classroom {
     } = await this.classroom.courses.list();
 
     this.courses = courses.filter((course) =>
-      mhsCourses.some(({ enrollmentCode }) => enrollmentCode === course.enrollmentCode)
+      mhsCourses.some(({ linkId }) => course.alternateLink?.endsWith(linkId))
     );
   }
 
@@ -244,7 +244,7 @@ class Classroom {
       }
     }
 
-    const mention = Classroom.resolveMention(course.enrollmentCode!);
+    const mention = Classroom.resolveMention(course.alternateLink!);
     return { content: mention, embeds: [embed] };
   }
 
@@ -347,7 +347,7 @@ class Classroom {
   }
 
   private static resolveMention(code: string) {
-    const { roleId } = mhsCourses.find(({ enrollmentCode }) => enrollmentCode === code)!;
+    const { roleId } = mhsCourses.find(({ linkId }) => code.endsWith(linkId))!;
     return `<@&${roleId}>`;
   }
 

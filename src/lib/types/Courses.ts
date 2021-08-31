@@ -1,5 +1,5 @@
 interface Course {
-  enrollmentCode: string;
+  linkId: string;
   roleId: string;
 }
 
