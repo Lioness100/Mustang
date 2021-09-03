@@ -88,7 +88,7 @@ class Classroom {
     }
 
     const dueDate = Classroom.resolveDueDate(courseWork);
-    if (!dueDate || dueDate < Date.now()) {
+    if (!dueDate || dueDate < Date.now() || dueDate < new Date().setHours(14, 18)) {
       return false;
     }
 
