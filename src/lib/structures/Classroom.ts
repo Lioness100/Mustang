@@ -154,30 +154,29 @@ class Classroom {
     const typeguard = (_entry: Post): _entry is ClassroomAPI.Schema$CourseWork => isCourseWork;
     const course = this.getCourseById(entry.courseId!)!;
 
+    const header = `New ${isCourseWork ? 'classwork' : 'post'} in "${course.name}"`;
     const embed = new MessageEmbed()
       .setColor(process.env.COLOR)
-      .setAuthor(`New ${isCourseWork ? 'classwork' : 'post'} in "${course.name}"`)
+      .setTitle(header)
       .setURL(entry.alternateLink!)
       .setDescription(
-        typeguard(entry)
-          ? `**${entry.title || 'No Title Provided'}**\n\n${cutText(
-              entry.description || 'No instructions provided!',
-              2000
-            )}`
-          : cutText(entry.text || 'This post has no text!', 2048)
+        cutText(
+          typeguard(entry)
+            ? entry.description ?? 'No instructions provided!'
+            : entry.text ?? 'This post has no text!',
+          2000
+        )
       );
+
+    if (typeguard(entry) && entry.title) {
+      embed.setAuthor(header).setTitle(entry.title);
+    }
 
     if (typeguard(entry)) {
       if (entry.dueDate) {
-        const now = new Date();
-        const { year = now.getUTCFullYear(), month = now.getUTCMonth(), day } = entry.dueDate;
-        const { hours = 0, minutes = 0, seconds = 0 } = entry.dueTime!;
-
-        if (day) {
-          embed.addField(
-            `❯ Assignment Due Date`,
-            `<t:${Math.floor(Date.UTC(year!, month!, day, hours!, minutes!, seconds!) / 1000)}:R>`
-          );
+        const dueDate = Classroom.resolveDueDate(entry);
+        if (dueDate) {
+          embed.addField(`❯ Assignment Due Date`, `<t:${Math.floor(dueDate / 1000)}:R>`);
         }
       }
 
@@ -357,10 +356,10 @@ class Classroom {
     }
 
     const now = new Date();
-    const { year = now.getUTCFullYear(), month = now.getUTCMonth(), day } = courseWork.dueDate;
+    const { year = now.getUTCFullYear(), month = now.getUTCMonth() + 1, day } = courseWork.dueDate;
     const { hours = 0, minutes = 0, seconds = 0 } = courseWork.dueTime!;
 
-    return Date.UTC(year!, month!, day, hours!, minutes!, seconds!);
+    return Date.UTC(year!, month! - 1, day, hours!, minutes!, seconds!);
   }
 
   private static filterPosts(post: Post) {
