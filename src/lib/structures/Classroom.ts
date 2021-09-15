@@ -290,11 +290,11 @@ class Classroom {
     const courseWork = await this.listCourseWork();
 
     const newAnnouncements = this.lastAnnouncement
-      ? announcements.slice(0, -this.lastAnnouncement)
+      ? announcements.slice(this.lastAnnouncement, announcements.length)
       : announcements.filter((a) => Date.now() - Date.parse(a.creationTime!) < 60000);
 
     const newCourseWork = this.lastCourseWork
-      ? courseWork.slice(0, -this.lastCourseWork)
+      ? courseWork.slice(this.lastCourseWork, courseWork.length)
       : courseWork.filter((c) => Date.now() - Date.parse(c.creationTime!) < 60000);
 
     this.lastAnnouncement = announcements.length;
