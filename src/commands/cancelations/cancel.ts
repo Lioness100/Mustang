@@ -32,8 +32,6 @@ export class UserCommand extends Command {
     });
 
     await this.container.cancelations.persist(cancelation).flush();
-
-    await message.pin();
     await message.react('😔');
 
     const warnCount = await this.container.cancelations.count({ cancelee: member.id });
